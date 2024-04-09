@@ -12,6 +12,24 @@
 
   post_tasks:
 
+    - name: 'Create directory for systemd drop-in'
+      ansible.builtin.file:
+        path: '/etc/systemd/system/podman.socket.d/'
+        state: 'directory'
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+
+    - name: 'Create systemd drop-in to allow all users access to the podman socket (DANGEROUS!)'
+      ansible.builtin.copy:
+        dest: '/etc/systemd/system/podman.socket.d/override.conf'
+        content: |
+          [Socket]
+          SocketMode=0666
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+
     - name: 'Start and enable the podman.socket user service'
       ansible.builtin.systemd:
         name: 'podman.socket'
